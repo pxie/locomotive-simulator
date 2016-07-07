@@ -45,6 +45,9 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 	RPMData rpmData =  new RPMData();
 	TorqueData torqueData = new TorqueData();
 	
+	//Request Mapping to start the simulator
+	//Only after start the simulator starts generating data and calls the data ingestion service
+	//In the lab, this method is called when we post to the simulator service using POSTMAN 
 	@RequestMapping(
 		    value = "/simulator/start",
 			method = RequestMethod.POST,
@@ -56,6 +59,8 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 
 	}
 	
+	//Request Mapping to start the simulator
+	//After being stopped the simulator doesnt generate data and the data ingestion service is idle.
 	@RequestMapping(
 			value = "/simulator/stop",
 			method = RequestMethod.POST,
@@ -65,6 +70,7 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 		return Boolean.toString(runSimulation);
 	}
 	
+	//Generate data every 2 seconds
 	@Scheduled(fixedRate=2000)
 	public void generateSimulatorData() {
 		
@@ -74,7 +80,8 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 		if (!runSimulation) {
 			return;
 		}
-			
+		
+		//Generate random values for Lat, Lng , Rpm, Torque	
 		locomotiveGatewayType = new LocomotiveGatewayType();
 		for (Locomotive locomotive : Locomotive.values()) {
 			
@@ -98,6 +105,7 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 			locomotiveGatewayType.setTorquedata(torqueData);
 							
 			RestTemplate restTemplate = new RestTemplate();
+			//Get the data ingestion service URL specified in the config files
 			final String uri = this.timeseriesUrl; //"http://locomotive-dataingestion-service.run.aws-usw02-pr.ice.predix.io/SaveTimeSeriesData";
 			
 			ObjectMapper mapper = new ObjectMapper();
@@ -116,6 +124,8 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 		    //mvm.add("tenantId", "34d2ece8-5faa-40ac-ae89-3a614aa00b6e");
 		    mvm.add("tenantId", this.timeseriesZone);
 		    mvm.add("content", jsonInString);
+		    //Post data to the data ingestion service 
+		    //Add client ID, Zone-ID and JSON data
 			String result = restTemplate.postForObject(uri, mvm, String.class);
 			
 			logger.info(" LocomotivesimulatorController :: generateSimulatorData - result: " + result);
@@ -124,6 +134,7 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 				
 	}
 	
+	//Get timeseries URI, Zone-ID and ClientID from the env variables 
 	@Override
 	public void setEnvironment(Environment env) {
 		this.timeseriesZone = env.getProperty("timeseriesZone");
