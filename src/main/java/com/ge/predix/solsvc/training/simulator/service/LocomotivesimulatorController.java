@@ -1,6 +1,11 @@
 package com.ge.predix.solsvc.training.simulator.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.yaml.snakeyaml.Yaml;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,6 +84,7 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 		
 		// the simulator is not supposed to run if the runSimulation flag is set to false and so, return w/o pushing data to TimeSeries
 		if (!runSimulation) {
+			logger.info("ERROR: Have you started your simulator service using POST command yet?");
 			return;
 		}
 		
@@ -101,6 +108,7 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 			
 			locomotiveGatewayType.setCurrentTime(System.currentTimeMillis());
 			locomotiveGatewayType.setLocdata(locationData);
+			logger.info(" RPM DATA " + rpmData.getRpm());
 			locomotiveGatewayType.setRpmData(rpmData);
 			locomotiveGatewayType.setTorquedata(torqueData);
 							
@@ -117,7 +125,6 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 				e.printStackTrace();
 			}
 			
-			logger.info(" LocomotivesimulatorController :: generateSimulatorData - json result: " + jsonInString);
 			
 			MultiValueMap<String, Object> mvm = new LinkedMultiValueMap<String, Object>();
 		    mvm.add("clientId", this.clientId);
@@ -128,7 +135,7 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 		    //Add client ID, Zone-ID and JSON data
 			String result = restTemplate.postForObject(uri, mvm, String.class);
 			
-			logger.info(" LocomotivesimulatorController :: generateSimulatorData - result: " + result);
+			logger.info(" LocomotivesimulatorController :: generateSimulatorData - json result: " + jsonInString + "***"+ result + "***");
 
 		}
 				
