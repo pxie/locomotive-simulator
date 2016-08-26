@@ -1,0 +1,5 @@
+uaac client update <your client> --authorities "<paste existing authorities found below> timeseries.zones.<your timeseries zoneId found below>.user timeseries.zones.<your timeseries zoneId found below>.ingest timeseries.zones.<your timeseries zoneId found below>.query" 
+
+
+authorities: scim.me uaa.resource openid views.zones.caa18a6d-23ae-421e-89ef-b95e406f09f5.user timeseries.zones.3bd1a850-c786-46b2-988d-bf47b10d0bac.ingest timeseries.zones.3bd1a850-c786-46b2-988d-bf47b10d0bac.user timeseries.zones.3bd1a850-c786-46b2-988d-bf47b10d0bac.query
+3bd1a850-c786-46b2-988d-bf47b10d0bac
