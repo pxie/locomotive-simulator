@@ -38,8 +38,8 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 	@Value("${timeseriesZone}")
 	String timeseriesZone;
 		
-	@Value("${timeseriesUrl}")
-	String timeseriesUrl;
+	@Value("${ingestionUrl}")
+	String ingestionUrl;
 	
 	@Value("${clientId}")
 	String clientId;
@@ -108,13 +108,12 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 			
 			locomotiveGatewayType.setCurrentTime(System.currentTimeMillis());
 			locomotiveGatewayType.setLocdata(locationData);
-			logger.info(" RPM DATA " + rpmData.getRpm());
 			locomotiveGatewayType.setRpmData(rpmData);
 			locomotiveGatewayType.setTorquedata(torqueData);
 							
 			RestTemplate restTemplate = new RestTemplate();
 			//Get the data ingestion service URL specified in the config files
-			final String uri = this.timeseriesUrl; //"http://locomotive-dataingestion-service.run.aws-usw02-pr.ice.predix.io/SaveTimeSeriesData";
+			final String uri = this.ingestionUrl; //"http://locomotive-dataingestion-service.run.aws-usw02-pr.ice.predix.io/SaveTimeSeriesData";
 			
 			ObjectMapper mapper = new ObjectMapper();
 			String jsonInString = null;
@@ -145,7 +144,7 @@ public class LocomotivesimulatorController implements EnvironmentAware {
 	@Override
 	public void setEnvironment(Environment env) {
 		this.timeseriesZone = env.getProperty("timeseriesZone");
-		this.timeseriesUrl = env.getProperty("timeseriesUrl");		
+		this.ingestionUrl = env.getProperty("ingestionUrl");		
 		this.clientId = env.getProperty("clientId");
 	}
 	
